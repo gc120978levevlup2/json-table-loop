@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Display JSON data</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
+    />
+    <style></style>
+  </head>
+  <body>
+
+    <!-- Start of Main Body --> 
+    <div class="container-md">
+      <div class="row-cols-md-12">
+        <div class="col border-2 border-start p-3 m-5">
+            <h2 class="text-bg-danger opacity-75 p-5 ps-4">
+                Source Api
+            </h2>
+            <hr>
+            <h6>
+                <span class="text-primary" style="font-size:x-large;"><i class="bi bi-filetype-html"></i></span>
+                <a target="_blank" href="https://raw.githubusercontent.com/kronusme/dota2-api/master/data/heroes.json">
+                    https://github.com/kronusme/dota2-api/blob/master/data/heroes.json
+                </a>
+            </h6>
+        </div>
+        <div class="col border-2 border-start p-3 m-5">
+            <h2 class="text-bg-primary p-5 ps-4">
+                <i class="bi bi-filetype-raw"></i>
+                Raw JSON Data enclosed in DIV element
+            </h2>
+            <hr>
+            <div id="data-raw"></div> <!-- this is the div container of the raw output --> 
+        </div>
+        <div class="col border-2 border-start p-3 m-5" id="root"></div>
+      </div>
+    </div>
+    
+    <!-- jquery javascript --> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    
+    <!-- bootstrap javascript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- custom javascript scripts -->
+    <script>
+      // function to create a table without the row data in it, just the headers
+      function make_a_table_skeleton_view() {
+        return /*html*/` 
+
+            <div class="container">
+                <h2 class="text-bg-success p-5 ps-3">
+                    <i class="bi bi-table"></i>
+                    List of Users
+                </h2>
+                <hr>
+                <table class="table table-striped w-100">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 30px">ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Localized Name</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-row"></tbody>
+                </table>
+            </div>
+
+        `/*html*/
+      }
+
+      // function to create table rows that corresponds to the data parameter
+      function make_table_rows_view(data) {
+        let html = ''
+        for (let value of data){  
+          html += /*html*/`
+          
+                      <tr>
+                          <th scope="col">${value.id}</th>
+                          <td>${value.name}</td>
+                          <td>${value.localized_name}</td>
+                      </tr>
+
+                  `/*html*/
+        }
+        return html
+      }
+
+      $('#root').html( make_a_table_skeleton_view() )                             // create a table without the row data in it, just the headers
+      //fetch("https://github.com/kronusme/dota2-api/blob/master/data/heroes.json")         // this command throws as error aye!
+      fetch("https://raw.githubusercontent.com/kronusme/dota2-api/master/data/heroes.json") // this command is perfectly fine mate!
+        .then( response_of_fetch => {
+            return response_of_fetch.json()                                      // extract a JSON data from response_of_fetch.json    
+        })                    
+        .then( extracted_data    => {                                    
+          console.log( extracted_data )                                          // show data to console
+          $('#data-raw').html( JSON.stringify (extracted_data.heroes) )          // show data as raw enclosed in a div 
+          $('#data-row').html( make_table_rows_view (extracted_data.heroes) )    // show data in a tabulated format
+        })
+        .catch((error) => {
+          console.log(error)                                                     // show console if something went wrong
+          alert(error)                                                           // show alert if an error occure
+        })
+    </script>
+
+  </body>
+</html>
